@@ -1,3 +1,8 @@
+# Developed by In Code We Speak
+# IV Line:
+# Executes an action (Lock, shutdown, etc.) to host operating system
+# when ICMP pings fail. Settings and thresholds can be modified at the
+# settings file of the service.
 
 import socket
 import win32serviceutil
@@ -11,45 +16,48 @@ import win32profile
 import os
 import traceback
 import time
+from globalVariables import *
+from datetime import datetime, timedelta
 from settingsHandler import settingsHandler
-from icmplib import ping
+from pingTest import pingTest
+
 
 class SMWinservice(win32serviceutil.ServiceFramework):
-    _svc_name_ = 'ivline'
-    _svc_display_name_ = 'IV Line'
-    _svc_description_ = 'Ensures an active communication to the specified host.'
-
-
+    _svc_name_ = SERVICE_NAME
+    _svc_display_name_ = SERVICE_DISPLAY_NAME
+    _svc_description_ = SERVICE_DESCRIPTION
+    ping = pingTest('')
+    
     @classmethod
     def parse_command_line(cls):
         win32serviceutil.HandleCommandLine(cls)
-            
+    
+    # Initialization 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
         self.run = True
         socket.setdefaulttimeout(60)
 
+    # Service Stop
     def SvcStop(self):
+        servicemanager.LogInfoMsg(str(SERVICE_NAME) + " is ending.")
+        dynamic_globals.running = False
         self.run = False
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
+    # Service Run
     def SvcDoRun(self):
         servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE, servicemanager.PYS_SERVICE_STARTED, (self._svc_name_, ''))
+        servicemanager.LogInfoMsg(SERVICE_DISPLAY_NAME + " " + SERVICE_VERSION + " - Developed by In Code We Speak")
         try:
             self.main()
         except:
             servicemanager.LogErrorMsg(traceback.format_exc())
             os._exit(-1)
 
-
-    def pingTest(self, hostname, maxTries):
-        for i in range(maxTries):
-            if (ping(hostname, 4, 1, 1).is_alive == True):
-                return True
-        return False
-
+    # Run commands within session context
     def runCommandInSession(self, command):
         console_session_id = win32ts.WTSGetActiveConsoleSessionId()
         console_user_token = win32ts.WTSQueryUserToken(console_session_id)
@@ -67,46 +75,50 @@ class SMWinservice(win32serviceutil.ServiceFramework):
     def lockWindows(self):
         self.runCommandInSession("rundll32.exe user32.dll,LockWorkStation")
 
+    # Sleep with service-running interrupt 
     def sleepWithInterrupt(self, seconds):
         if (seconds < 0): seconds = 0
         for i in range(seconds):
-            if self.run == False: return True
+            if dynamic_globals.running == False: return True
             time.sleep(1)
         return False
-        
+
+    # Main loop
     def main(self):
-        settings = settingsHandler("C:/IVLine/", "settings.txt")
+        settings = settingsHandler()
         settings.load(True)
-        while self.run == True:
+        self.ping.setHost(settings.host)
+        while dynamic_globals.running == True:
             self.sleepWithInterrupt(settings.pollTime)
-            if self.pingTest(settings.host, settings.pingTries) == False:
-                servicemanager.LogWarningMsg("Ping test failed for host \"" + settings.host + "\" Starting grace period countdown.")
-                if settings.remediation == "lock": 
-                    if (self.sleepWithInterrupt(settings.gracePeriod) == True):
-                        servicemanager.LogInfoMsg("Service interrupted. Remediation canceled")
-                    elif self.pingTest(settings.host) == True:
-                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Remediation canceled.")
+            # Check for ping test fails
+            if self.ping.tries(settings.pingTries) == False:
+                servicemanager.LogWarningMsg("Ping test failed for host \"" + settings.host + "\" Starting grace period countdown of " + str(settings.gracePeriod))
+
+                # Lock Option
+                if settings.action == "lock": 
+                    result = self.ping.timespan(settings.gracePeriod)
+                    if (result == 2):
+                        servicemanager.LogInfoMsg("Service interrupted. Lock canceled")
+                    elif (result == 1):
+                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Lock canceled.")
                     else:
                         servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Locking machine.")
                         self.lockWindows()
 
-                elif settings.remediation == "shutdown": 
+                # Shutdown Option
+                elif settings.action == "shutdown": 
                     self.shutdownWindows(settings.gracePeriod)
-
-                    if (self.sleepWithInterrupt(settings.gracePeriod - 4) == True):
+                    result = self.ping.timespan(settings.gracePeriod)
+                    if (result == 2):
                         self.cancelShutdownWindows()
-                        servicemanager.LogInfoMsg("Service interrupted. Remediation canceled")
-                    elif self.pingTest(settings.host) == True:
+                        servicemanager.LogInfoMsg("Service interrupted. Shutdown canceled")
+                    elif (result == 1):
                         self.cancelShutdownWindows()
-                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Remediation canceled.")
+                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Shutdown canceled.")
                     else:
                         servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Shutting down machine.")
                     
                     
-            
-                
-
-
 if __name__ == '__main__':
     SMWinservice.parse_command_line()
     
