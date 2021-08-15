@@ -11,7 +11,7 @@ IV Line is a service that executes an action (Lock, shutdown, etc.) on a client 
 1. Install Python 3.9 (https://www.python.org/downloads/)
    - Ensure "Add Python 3.9 to PATH" is checked
    - Do a "Custom" installation and ensure "Install for All Users" is checked
-2. Download the Github package and extract the source folder to `C:\Program Files\ivline\`
+2. Download the Github package and extract the `source` folder to `C:\Program Files\ivline\`
 3. Open CMD with admin rights and run:
    - `pip install icmplib`
    - `pip install pywin32`
