@@ -1,7 +1,7 @@
 # IV Line
 #### Developed by In Code We Speak
 
-IV Line is a service that executes an action (Lock, shutdown, etc.) on the host operating system when ICMP pings fail. Settings and thresholds can be modified at the settings file.
+IV Line is a service that executes an action (Lock, shutdown, etc.) on a client when a host goes down. Settings and thresholds can be modified at the settings file.
 
 ### Warning and Disclaimers
 - In Code We Speak is not responsible for damages caused by this software
