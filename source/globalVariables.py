@@ -2,7 +2,7 @@
 SERVICE_NAME = 'ivline'
 SERVICE_DISPLAY_NAME = 'IV Line'
 SERVICE_DESCRIPTION = 'Ensures an active communication to the specified host.'
-SERVICE_VERSION = '1.3'
+SERVICE_VERSION = '1.4'
 
 SETTINGS_FOLDER_PATH = 'C:/Program Files/ivline/'
 SETTINGS_FILENAME = "settings.txt"

@@ -33,8 +33,11 @@ class settingsHandler:
     def load(self, createIfNotPresent = False):
         if createIfNotPresent == True:
             if os.path.exists(SETTINGS_FOLDER_PATH + SETTINGS_FILENAME) == False:
-                Path(SETTINGS_FOLDER_PATH).mkdir(parents=True)
-                self.save()
+                if os.path.exists(SETTINGS_FOLDER_PATH) == True:
+                    self.save()
+                else:
+                    Path(SETTINGS_FOLDER_PATH).mkdir(parents=True)
+                    self.save()
         f = open(SETTINGS_FOLDER_PATH + SETTINGS_FILENAME, 'r')
         self.__dict__ = json.loads(f.read())
 
