@@ -16,8 +16,7 @@ IV Line is a service that executes an action (Lock, shutdown, etc.) on a client 
    - `pip install icmplib`
    - `pip install pywin32`
    - `copy "C:\Program Files\Python39\Lib\site-packages\pywin32_system32\pywintypes39.dll" "C:\Program Files\Python39\Lib\site-packages\win32"`
-   - `python "C:\Program Files\ivline\source\main.py" install`
-5. Open `Services.msc` and start the IV Line service   
+   - `python "C:\Program Files\ivline\source\main.py" install`  
    
 ### Configuration
 The `settings.txt` file is stored (by default) in `C:\Program Files\ivline\settings.txt`
