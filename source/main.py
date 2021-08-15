@@ -89,35 +89,38 @@ class SMWinservice(win32serviceutil.ServiceFramework):
         settings.load(True)
         self.ping.setHost(settings.host)
         while dynamic_globals.running == True:
-            self.sleepWithInterrupt(settings.pollTime)
-            # Check for ping test fails
-            if self.ping.tries(settings.pingTries) == False:
-                servicemanager.LogWarningMsg("Ping test failed for host \"" + settings.host + "\" Starting grace period countdown of " + str(settings.gracePeriod))
+            try:
+                self.sleepWithInterrupt(settings.pollTime)
+                # Check for ping test fails
+                if self.ping.tries(settings.pingTries) == False:
+                    servicemanager.LogWarningMsg("Ping test failed for host \"" + settings.host + "\" Starting grace period countdown of " + str(settings.gracePeriod))
 
-                # Lock Option
-                if settings.action == "lock": 
-                    result = self.ping.timespan(settings.gracePeriod)
-                    if (result == 2):
-                        servicemanager.LogInfoMsg("Service interrupted. Lock canceled")
-                    elif (result == 1):
-                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Lock canceled.")
-                    else:
-                        servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Locking machine.")
-                        self.lockWindows()
+                    # Lock Option
+                    if settings.action == "lock": 
+                        result = self.ping.timespan(settings.gracePeriod)
+                        if (result == 2):
+                            servicemanager.LogInfoMsg("Service interrupted. Lock canceled")
+                        elif (result == 1):
+                            servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Lock canceled.")
+                        else:
+                            servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Locking machine.")
+                            self.lockWindows()
 
-                # Shutdown Option
-                elif settings.action == "shutdown": 
-                    self.shutdownWindows(settings.gracePeriod)
-                    result = self.ping.timespan(settings.gracePeriod)
-                    if (result == 2):
-                        self.cancelShutdownWindows()
-                        servicemanager.LogInfoMsg("Service interrupted. Shutdown canceled")
-                    elif (result == 1):
-                        self.cancelShutdownWindows()
-                        servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Shutdown canceled.")
-                    else:
-                        servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Shutting down machine.")
-                    
+                    # Shutdown Option
+                    elif settings.action == "shutdown": 
+                        self.shutdownWindows(settings.gracePeriod)
+                        result = self.ping.timespan(settings.gracePeriod)
+                        if (result == 2):
+                            self.cancelShutdownWindows()
+                            servicemanager.LogInfoMsg("Service interrupted. Shutdown canceled")
+                        elif (result == 1):
+                            self.cancelShutdownWindows()
+                            servicemanager.LogInfoMsg("Connection to \"" + settings.host + "\" has been re-established. Shutdown canceled.")
+                        else:
+                            servicemanager.LogErrorMsg("Grace period ended and no connection to \"" + settings.host + "\" has been established. Shutting down machine.")
+            except Exception as error:
+                servicemanager.LogErrorMsg(repr(error))
+                time.sleep(1)
                     
 if __name__ == '__main__':
     SMWinservice.parse_command_line()
