@@ -34,6 +34,7 @@ The `settings.txt` file is stored (by default) in `C:\Program Files\ivline\setti
 ### Tips
 - IV Line events can be monitored under Event Viewer > Windows Logs > Application
 - If you want to cancel a pending action, such as a lock or shutdown, you can stop the service (Admin rights needed) via `Services.msc`
+- Users with Administrator Rights can stop or modify the Service, but standard Users cannot
 - Once you confirm the service is working as intended, you can set the Service Startup Type to Automatic
    - Note: Be very careful with this as you can lock-out your computer if the grace period timespan is too low
    
