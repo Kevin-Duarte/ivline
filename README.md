@@ -1,8 +1,6 @@
 # IV Line
 #### Developed by In Code We Speak
 
-Have a workstation that needs to stay online? Need it to shutdown or lock itself when it goes out of the network?
-
 IV Line is a lightweight Windows service that executes an action (Lock, shutdown, etc.) on a client when a host goes down. Settings and thresholds can be modified in the settings file.
 
 ### Warning and Disclaimers
