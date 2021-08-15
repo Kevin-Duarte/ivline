@@ -10,7 +10,7 @@ IV Line is a service that executes an action (Lock, shutdown, etc.) on a client 
 ### Installation
 1. Install Python 3.9 (https://www.python.org/downloads/)
    - Ensure "Add Python 3.9 to PATH" is checked
-   - Do a "Custom" installation and ensure "Install for All Users" is checked
+   - Do a "Custom installation" and ensure "Install for All Users" is checked
 2. Download the Github package and extract the `source` folder to `C:\Program Files\ivline\`
 3. Open CMD with admin rights and run:
    - `pip install icmplib`
@@ -31,3 +31,8 @@ The `settings.txt` file is stored (by default) in `C:\Program Files\ivline\setti
 1. Open `Services.msc` and start the IV Line service
 2. If needed, you can set the Startup Type to Automatic once you confirm it is working as intended
 3. Monitor the events under Event Viewer > Windows Logs > Application
+
+### Tips
+- IV Line events can be monitored under Event Viewer > Windows Logs > Application
+- If you want to cancel a pending action, you can stop the service (Admin rights needed)
+- The default threshold settings should suffice most use cases
