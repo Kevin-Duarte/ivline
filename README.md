@@ -22,17 +22,18 @@ IV Line is a service that executes an action (Lock, shutdown, etc.) on a client 
 The `settings.txt` file is stored (by default) in `C:\Program Files\ivline\settings.txt`
   - `Host`: Host to ping for heartbeat
   - `pollTime`: How often to ping the host (1 = once every second, 10 = once every 10 seconds, etc.)
-  - `gracePeriod`: The amount of time for a downed host to come back online before an action is executed
+  - `gracePeriod`: The amount of time for a downed host to come back online before an action is executed (seconds)
   - `action`: The action to execute once grace period has ended and host has not came back online
     - Valid Inputs: `lock`, `shutdown`
   - `pingTries`: Amount of pings to test before considering a host is down
 
 ### Starting Service
 1. Open `Services.msc` and start the IV Line service
-2. If needed, you can set the Startup Type to Automatic once you confirm it is working as intended
-3. Monitor the events under Event Viewer > Windows Logs > Application
+2. Go to Event Viewer > Windows Logs > Application and ensure there are no ivline errors
 
 ### Tips
 - IV Line events can be monitored under Event Viewer > Windows Logs > Application
-- If you want to cancel a pending action, you can stop the service (Admin rights needed)
-- The default threshold settings should suffice most use cases
+- If you want to cancel a pending action, such as a lock or shutdown, you can stop the service (Admin rights needed) via `Services.msc`
+- Once you confirm the service is working as intended, you can set the Service Startup Type to Automatic
+   - Note: Be very careful with this as you can lock-out your computer if the grace period timespan is too low
+   
