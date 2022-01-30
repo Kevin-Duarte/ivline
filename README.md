@@ -5,7 +5,7 @@ IV Line is a lightweight Windows service that executes an action (Lock, shutdown
 
 ### Warning and Disclaimers
 - In Code We Speak is not responsible for damages caused by this software
-- In Code We Speak is not responsible for maintenance on this software. However, feel free to reach us at support@incodewespeak.com for special requests or custom solutions.
+- In Code We Speak is not responsible for maintenance of this software. However, feel free to reach us at support@incodewespeak.com for special requests or custom solutions.
 
 ### Installation
 1. Install Python 3.9 (https://www.python.org/downloads/)
