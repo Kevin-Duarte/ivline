@@ -3,7 +3,7 @@
 
 IV Line is a lightweight Windows service that executes an action (Lock, shutdown, etc.) on a client when a host goes down. Settings and thresholds can be modified in the settings file.
 
-### Warning and Disclaimers
+### Warnings and Disclaimers
 - In Code We Speak is not responsible for damages caused by this software
 - In Code We Speak is not responsible for maintenance of this software. However, feel free to reach us at support@incodewespeak.com for special requests or custom solutions.
 
